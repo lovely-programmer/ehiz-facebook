@@ -1,7 +1,7 @@
 import DeleteTd from "@/components/DeleteTd";
 
 export default async function Facebook() {
-  const res = await fetch("http://localhost:3000/api/facebook", {
+  const res = await fetch("https://ehiz-facebook.vercel.app/api/facebook", {
     cache: "no-store",
   });
   const posts = await res.json();
